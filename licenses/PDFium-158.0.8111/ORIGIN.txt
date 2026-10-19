@@ -1,0 +1,3 @@
+PDFium 158.0.8111 x64 (sem V8/XFA). Source: https://github.com/bblanchon/pdfium-binaries/releases/download/chromium/8111/pdfium-win-x64.tgz
+SHA256: 3452d11031050ec65e57f180215b57b9e6d465e3fbedafa8a77ad90885c7d23e
+Licencas: LICENSE e licenses/ da distribuicao. Fontes: https://pdfium.googlesource.com/pdfium/+/refs/heads/chromium/8111

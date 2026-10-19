@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-3.0-or-later
+﻿// SPDX-License-Identifier: GPL-3.0-or-later
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -30,7 +30,7 @@ namespace FileTools
                 {
                     if (args.Length != 2 || args[0] != "--request")
                     {
-                        MessageBox.Show("Selecione arquivos no Explorador e use FileTools no menu de contexto.\n\nPDF: unir, separar e extrair páginas.\nImagens: PNG, JPG e WebP.\n\nInstalação: abra FileTools-0.2.0-win-x64.msi.\nTodos os novos resultados preservam os originais.", "FileTools");
+                        MessageBox.Show("Selecione arquivos no Explorador e use FileTools no menu de contexto.\n\nPDF: unir, editar, imprimir, separar e exportar páginas em PNG/JPG.\nImagens: converter formatos ou gerar PDF.\nDOC/DOCX e PDF → DOCX: requer LibreOffice local.\n\nInstalação: abra FileTools-0.3.0-win-x64.msi.\nConversões preservam os originais; o editor confirma sua substituição.", "FileTools");
                         return;
                     }
                     SelectionRequest request = SelectionTransport.Read(args[1], true);
@@ -39,9 +39,20 @@ namespace FileTools
                     string destination = Path.GetDirectoryName(request.Files[0]); // Capture BEFORE natural ordering.
                     string[] ordered = request.Files;
                     string specification = null;
-                    if (request.Operation == Operations.MergeOrdered)
+                    if (request.Operation == Operations.Edit)
                     {
-                        ordered = Dialogs.OrderFiles(request.Files.OrderBy(p => p, new NaturalPathComparer()).ToArray());
+                        new PdfEditorWindow(request.Files[0]).ShowDialog();
+                        return;
+                    }
+                    if (request.Operation == Operations.Print)
+                    {
+                        await PdfPrinting.PrintAsync(request.Files);
+                        return;
+                    }
+                    if (request.Operation == Operations.PdfDocx && MessageBox.Show("O PDF será convertido pelo LibreOffice. Texto, tabelas e posições podem perder formatação. PDFs digitalizados exigem OCR, que não está incluído. Continuar?", "PDF → DOCX editável", MessageBoxButton.OKCancel, MessageBoxImage.Information) != MessageBoxResult.OK) return;
+                    if (request.Operation == Operations.MergeOrdered || request.Operation == Operations.Merge)
+                    {
+                        ordered = MergeWindow.Select(request.Files);
                         if (ordered == null) return;
                     }
                     if (request.Operation == Operations.Extract)
@@ -69,7 +80,8 @@ namespace FileTools
                         var progress = new Progress<string>(value => progressWindow.SetStatus(value));
                         try
                         {
-                            string[] results = await ExecuteAsync(request.Operation, ordered, destination, specification, progress, cancellation.Token);
+                            string operation = request.Operation == Operations.Merge ? Operations.MergeOrdered : request.Operation;
+                            string[] results = await ExecuteAsync(operation, ordered, destination, specification, progress, cancellation.Token);
                             completed = true;
                             delay.Stop();
                             progressWindow.Finish();
@@ -87,7 +99,7 @@ namespace FileTools
                 {
                     code = 1;
                     LogFailure(ex);
-                    string message = ex is FileNotFoundException ? "Um arquivo ou dependência não está disponível. Verifique se o pacote contém Tools/qpdf/bin/qpdf.exe e selecione novamente os arquivos." :
+                    string message = ex is FileNotFoundException ? ex.Message :
                         ex is InvalidDataException || ex is ArgumentException ? ex.Message :
                         "Não foi possível concluir a operação. Verifique permissões, espaço em disco e a integridade dos arquivos. Itens já concluídos permanecem no destino.";
                     MessageBox.Show(message, "FileTools", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -116,6 +128,22 @@ namespace FileTools
                             token.ThrowIfCancellationRequested();
                             results.AddRange(await pdf.SplitAsync(path, destination, specification, progress, token));
                         }
+                    }
+                    else if (operation == Operations.DocumentPdf || operation == Operations.PdfDocx)
+                    {
+                        var converter = new DocumentConversion();
+                        foreach (string path in paths)
+                            results.Add(await converter.ConvertAsync(path, destination, operation == Operations.PdfDocx, token));
+                    }
+                    else if (operation == Operations.ImagesPdf)
+                        results.Add(await ImagesToPdf.ConvertAsync(paths, destination, true, token));
+                    else if (operation == Operations.ImagePdf)
+                    {
+                        foreach (string path in paths) results.Add(await ImagesToPdf.ConvertAsync(new[] { path }, destination, false, token));
+                    }
+                    else if (operation == Operations.PdfPng || operation == Operations.PdfJpg)
+                    {
+                        foreach (string path in paths) results.AddRange(await PdfRenderer.ExportAsync(path, destination, operation == Operations.PdfPng ? "png" : "jpg", progress, token));
                     }
                     else
                     {

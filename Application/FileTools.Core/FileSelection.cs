@@ -13,13 +13,19 @@ namespace FileTools
     {
         public const string Merge = "pdf-merge", MergeOrdered = "pdf-merge-order";
         public const string Split = "pdf-split", Extract = "pdf-extract";
+        public const string Edit = "pdf-edit", Print = "pdf-print", PdfPng = "pdf-png", PdfJpg = "pdf-jpg";
+        public const string DocumentPdf = "document-pdf", PdfDocx = "pdf-docx", ImagePdf = "images-pdf", ImagesPdf = "images-pdf-merge";
         public static readonly string[] Images = { ".jpg", ".jpeg", ".png", ".webp", ".bmp", ".tif", ".tiff", ".gif" };
         public static bool Supports(string operation, string[] paths)
         {
-            if (paths == null || paths.Length == 0) return false;
+            if (paths == null || paths.Length == 0 || paths.Any(string.IsNullOrWhiteSpace)) return false;
             if (operation == Merge || operation == MergeOrdered)
                 return paths.Length >= 2 && paths.All(IsPdf);
             if (operation == Split || operation == Extract) return paths.All(IsPdf);
+            if (operation == Edit) return paths.Length == 1 && paths.All(IsPdf);
+            if (new[] { Print, PdfPng, PdfJpg, PdfDocx }.Contains(operation)) return paths.All(IsPdf);
+            if (operation == DocumentPdf) return paths.All(p => new[] { ".doc", ".docx" }.Contains(Path.GetExtension(p).ToLowerInvariant()));
+            if (operation == ImagePdf || operation == ImagesPdf) return paths.All(p => new[] { ".jpg", ".jpeg", ".png" }.Contains(Path.GetExtension(p).ToLowerInvariant()));
             return new[] { "image-png", "image-jpg", "image-webp" }.Contains(operation)
                 && paths.All(p => Images.Contains(Path.GetExtension(p).ToLowerInvariant()));
         }

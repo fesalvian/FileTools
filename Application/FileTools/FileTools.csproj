@@ -7,7 +7,12 @@
     <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="..\..\.tools\pdfium\bin\pdfium.dll" Link="pdfium.dll" CopyToOutputDirectory="PreserveNewest" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="ReachFramework" />
+    <Reference Include="System.Printing" />
     <ProjectReference Include="..\FileTools.Core\FileTools.Core.csproj" />
     <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="15.0.0" />
+    <PackageReference Include="PDFsharp-WPF" Version="6.2.4" />
   </ItemGroup>
 </Project>

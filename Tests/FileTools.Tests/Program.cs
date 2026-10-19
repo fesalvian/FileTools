@@ -17,7 +17,7 @@ using FileTools;
 using ImageMagick;
 using ShellExtension = FileConverterExtension.FileConverterExtension;
 
-internal static class Tests
+internal static partial class Tests
 {
     private static string root, qpdf;
     private static int passed, failed;
@@ -227,10 +227,11 @@ internal static class Tests
                 using (var menu = ShellExtension.BuildFileToolsMenu(new[] {"C:\\a.pdf"},(op,files)=>{}))
                 {
                     var rootItem = (ToolStripMenuItem)menu.Items[0];
-                    var pdf = (ToolStripMenuItem)rootItem.DropDownItems[0];
+                    var pdf = rootItem.DropDownItems.OfType<ToolStripMenuItem>().Single(i=>i.Text=="PDF");
                     Assert(rootItem.Text == "FileTools" && pdf.DropDownItems.Find(Operations.Merge,false).Length == 0);
                     Assert(pdf.DropDownItems.Find(Operations.Split,false).Length == 1);
-                    Assert(rootItem.DropDownItems.Count == 1);
+                    Assert(rootItem.DropDownItems.Find(Operations.Edit,false).Length == 1);
+                    Assert(rootItem.DropDownItems.Find(Operations.Print,false).Length == 1);
                 }
                 return Task.CompletedTask;
             });
@@ -245,8 +246,8 @@ internal static class Tests
                 }))
                 {
                     selected[0] = Path.Combine(root,"changed.pdf");
-                    var pdf = (ToolStripMenuItem)((ToolStripMenuItem)menu.Items[0]).DropDownItems[0];
-                    ((ToolStripMenuItem)pdf.DropDownItems.Find(Operations.Merge,false)[0]).PerformClick();
+                    var rootItem = (ToolStripMenuItem)menu.Items[0];
+                    ((ToolStripMenuItem)rootItem.DropDownItems.Find(Operations.Merge,false)[0]).PerformClick();
                 }
                 Assert(received.SequenceEqual(original));
                 return Task.CompletedTask;
@@ -348,6 +349,7 @@ internal static class Tests
                 await Throws<MagickException>(() => new ImageConversion().ConvertAsync(source,dir,"jpg",CancellationToken.None));
                 Assert(Directory.GetDirectories(dir).Length==0 && Directory.GetFiles(dir).Length==1);
             });
+            NewFeatures();
         }
         finally
         {

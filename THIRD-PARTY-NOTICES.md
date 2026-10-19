@@ -1,4 +1,4 @@
-# Dependências e avisos
+﻿# Dependências e avisos
 
 O FileTools deriva do fork fesalvian/FileConverter, commit base 5dce6c0, de Adrien Allard e colaboradores. GPL-3.0-or-later; avisos originais mantidos. Arquivos modificados nesta derivação são identificáveis pelos commits e pelo plano técnico.
 
@@ -9,6 +9,8 @@ O FileTools deriva do fork fesalvian/FileConverter, commit base 5dce6c0, de Adri
 | SharpShell | 2.7.2 | NuGet SharpShell / github.com/dwmkerr/sharpshell | MIT |
 | Magick.NET-Q16-AnyCPU e Magick.NET.Core | 15.0.0 | NuGet / github.com/dlemstra/Magick.NET, commit 79bb8700d7fe3a564f62926ab299fc2520cb2269 | Apache-2.0 |
 | ImageMagick e codecs nativos | 7.1.2-33, 2026-10-10, conforme Notice.txt do Magick.NET | Inclusos na DLL nativa x64 do pacote anterior | ImageMagick License e licenças dos codecs em licenses/Magick.NET-Notice.txt |
+| PDFsharp-WPF | 6.2.4 | NuGet / github.com/empira/PDFsharp, tag v6.2.4 | MIT; licenses/PDFsharp-MIT.txt |
+| PDFium x64 sem V8/XFA | 158.0.8111 | github.com/bblanchon/pdfium-binaries/releases/tag/chromium/8111 | BSD e licenças de terceiros; licenses/PDFium-158.0.8111 |
 | qpdf | 12.4.1 MSVC x64 | github.com/qpdf/qpdf/releases/tag/v12.4.1 | Apache-2.0; documentação e avisos do pacote preservados |
 | System.Resources.Extensions e dependências Microsoft | versões exatas no inventário licenses/nuget | NuGet / repositórios oficiais indicados nos arquivos nuspec | MIT, exceto onde o nuspec indicar outra licença |
 
@@ -30,9 +32,11 @@ O inventário gerado registra ID, versão, licença, copyright e origem de cada 
 - Ghostscript: binários herdados em Middleware/gs; AGPL/comercial. A revisão exata e o conjunto de avisos/fontes do binário precisam ser conferidos antes da distribuição.
 - Markdown.Xaml.dll, Ripper.dll e yeti.mmedia.dll: binários herdados; referências históricas constam no README original do commit base. Proveniência/licença exatas ainda precisam de confirmação; não constam no MSI novo.
 - Office/NetOffice, WpfAnimatedGif e bibliotecas de MVVM: permanecem no build legado, fora do MSI da fase 2.
-- LibreOffice: avaliado para fase 3, não usado/distribuído.
+- LibreOffice: motor externo opcional para DOC/DOCX → PDF e PDF → DOCX; MPL-2.0/LGPL conforme a distribuição oficial. Não redistribuído nem instalado pelo FileTools.
 - Nenhum novo motor não documentado foi incorporado ao instalador.
 
 O ZIP de fontes preserva Middleware exatamente como veio do fork para reconstruir a aplicação legada. Isso não representa auditoria concluída desses binários históricos. Antes de redistribuir o build legado, concluir essa auditoria e fornecer os avisos e fontes exigidos.
 
 Ao disponibilizar o MSI a terceiros, disponibilize simultaneamente o ZIP de fontes correspondente, instruções de build e todos os avisos. Não substituir o ZIP de fontes por um link apenas para o projeto original, pois ele não contém estas modificações.
+
+PDFsharp 6.2.4 foi fixado sob MIT; não usar 6.5+ como atualização automática, pois mudou de licença. Fontes/aviso da versão: https://github.com/empira/PDFsharp/tree/v6.2.4. PDFium: origem, SHA-256 e fontes exatas em licenses/PDFium-158.0.8111/ORIGIN.txt e scripts/Get-Pdfium.ps1. Todos os avisos do arquivo oficial foram preservados.

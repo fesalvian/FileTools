@@ -10,6 +10,7 @@ $env:DOTNET_ADD_GLOBAL_TOOLS_TO_PATH = 'false'
 $env:DOTNET_CLI_HOME = Join-Path $root '.tools\cli'
 $env:NUGET_PACKAGES = Join-Path $root '.tools\packages'
 & (Join-Path $PSScriptRoot 'New-Icon.ps1')
+if (-not (Test-Path -LiteralPath (Join-Path $root '.tools\pdfium\bin\pdfium.dll'))) { throw 'Execute scripts/Get-Pdfium.ps1 primeiro.' }
 & $Dotnet build FileTools.sln -c Release -p:Platform=x64 --nologo
 if ($LASTEXITCODE -ne 0) { throw 'Falha na compilação.' }
 if ($Test) {

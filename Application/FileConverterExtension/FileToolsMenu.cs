@@ -22,10 +22,17 @@ namespace FileConverterExtension
             catch (IOException) { } catch (ArgumentException) { }
             var pdf = new ToolStripMenuItem("PDF");
             var images = new ToolStripMenuItem("Imagens");
-            AddOperation(pdf, "Unir PDFs", Operations.Merge, snapshot, invoke);
-            AddOperation(pdf, "Unir PDFs — escolher ordem…", Operations.MergeOrdered, snapshot, invoke);
+            AddOperation(root, "Unir PDFs…", Operations.Merge, snapshot, invoke);
+            AddOperation(root, "Editar PDF", Operations.Edit, snapshot, invoke);
+            AddOperation(root, "Imprimir PDF…", Operations.Print, snapshot, invoke);
+            AddOperation(root, "Converter DOC/DOCX para PDF", Operations.DocumentPdf, snapshot, invoke);
+            AddOperation(root, "Imagens para PDF único", Operations.ImagesPdf, snapshot, invoke);
+            AddOperation(images, "Cada imagem para um PDF", Operations.ImagePdf, snapshot, invoke);
             AddOperation(pdf, "Separar todas as páginas", Operations.Split, snapshot, invoke);
             AddOperation(pdf, "Dividir por intervalos / extrair páginas…", Operations.Extract, snapshot, invoke);
+            AddOperation(pdf, "Todas as páginas para PNG", Operations.PdfPng, snapshot, invoke);
+            AddOperation(pdf, "Todas as páginas para JPG", Operations.PdfJpg, snapshot, invoke);
+            AddOperation(pdf, "Converter para DOCX editável…", Operations.PdfDocx, snapshot, invoke);
             AddOperation(images, "Converter para PNG", "image-png", snapshot, invoke);
             AddOperation(images, "Converter para JPG", "image-jpg", snapshot, invoke);
             AddOperation(images, "Converter para WebP", "image-webp", snapshot, invoke);

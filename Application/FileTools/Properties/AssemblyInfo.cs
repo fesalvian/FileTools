@@ -5,6 +5,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyProduct("FileTools")]
 [assembly: AssemblyDescription("Ferramentas offline para arquivos no Windows")]
 [assembly: AssemblyCopyright("FileTools contributors; derived from FileConverter by Adrien Allard")]
-[assembly: AssemblyVersion("0.2.0.0")]
-[assembly: AssemblyFileVersion("0.2.0.0")]
+[assembly: AssemblyVersion("0.3.0.0")]
+[assembly: AssemblyFileVersion("0.3.0.0")]
 [assembly: ComVisible(false)]

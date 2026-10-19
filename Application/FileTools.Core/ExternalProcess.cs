@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -44,16 +45,46 @@ namespace FileTools
                 string.Join(" ", arguments.Select(Quote))) {
                 UseShellExecute = false, CreateNoWindow = true, RedirectStandardOutput = true,
                 RedirectStandardError = true, StandardOutputEncoding = Encoding.UTF8, StandardErrorEncoding = Encoding.UTF8 } })
+            using(var job=new ProcessJob())
             {
                 process.Start();
+                try{job.Assign(process);}catch{try{process.Kill();}catch(InvalidOperationException){}throw;}
                 var output = ReadBoundedAsync(process.StandardOutput);
                 var error = ReadBoundedAsync(process.StandardError);
-                using (token.Register(() => { try { if (!process.HasExited) process.Kill(); } catch (InvalidOperationException) { } }))
+                using (token.Register(job.Cancel))
                     await Task.Run(() => process.WaitForExit()).ConfigureAwait(false);
                 var result = new ProcessResult { ExitCode = process.ExitCode, Output = await output.ConfigureAwait(false), Error = await error.ConfigureAwait(false) };
                 token.ThrowIfCancellationRequested();
                 return result;
             }
+        }
+        // An unnamed Windows job contains only this converter and its descendants.
+        // Cancellation/worker failure must not leave an isolated soffice.bin running.
+        private sealed class ProcessJob:IDisposable
+        {
+            private IntPtr handle;
+            public ProcessJob()
+            {
+                handle=CreateJobObject(IntPtr.Zero,null);
+                if(handle==IntPtr.Zero)throw new System.ComponentModel.Win32Exception();
+                IntPtr limits=Marshal.AllocHGlobal(144); // JOBOBJECT_EXTENDED_LIMIT_INFORMATION, Windows x64.
+                try
+                {
+                    Marshal.Copy(new byte[144],0,limits,144);
+                    Marshal.WriteInt32(limits,16,0x2000); // JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE.
+                    if(!SetInformationJobObject(handle,9,limits,144))throw new System.ComponentModel.Win32Exception();
+                }
+                catch{Dispose();throw;}
+                finally{Marshal.FreeHGlobal(limits);}
+            }
+            public void Assign(Process process){if(!AssignProcessToJobObject(handle,process.Handle))throw new System.ComponentModel.Win32Exception();}
+            public void Cancel(){TerminateJobObject(handle,1);}
+            public void Dispose(){if(handle!=IntPtr.Zero){CloseHandle(handle);handle=IntPtr.Zero;}}
+            [DllImport("kernel32.dll",CharSet=CharSet.Unicode,SetLastError=true)] private static extern IntPtr CreateJobObject(IntPtr attributes,string name);
+            [DllImport("kernel32.dll",SetLastError=true)] private static extern bool SetInformationJobObject(IntPtr job,int information,IntPtr data,uint size);
+            [DllImport("kernel32.dll",SetLastError=true)] private static extern bool AssignProcessToJobObject(IntPtr job,IntPtr process);
+            [DllImport("kernel32.dll")] private static extern bool TerminateJobObject(IntPtr job,uint code);
+            [DllImport("kernel32.dll")] private static extern bool CloseHandle(IntPtr handle);
         }
         private static async Task<string> ReadBoundedAsync(StreamReader reader)
         {

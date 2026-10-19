@@ -77,7 +77,7 @@ namespace FileConverterExtension
             try
             {
                 var paths = this.SelectedItemPaths.ToArray();
-                if (new[] { FileTools.Operations.Merge, FileTools.Operations.Split, "image-png" }.Any(op => FileTools.Operations.Supports(op, paths)))
+                if (new[] { FileTools.Operations.Merge, FileTools.Operations.Split, FileTools.Operations.DocumentPdf, "image-png" }.Any(op => FileTools.Operations.Supports(op, paths)))
                     return true;
                 this.RefreshExtensionCacheFromSelectedItems();
                 return (this.PresetReferences ?? new PresetReference[0]).Any(p => p.InputTypes.Any(ext => this.extensionCache.Contains(ext)));

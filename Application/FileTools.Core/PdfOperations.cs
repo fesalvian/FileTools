@@ -45,6 +45,10 @@ namespace FileTools
                 throw new InvalidDataException("PDF sem páginas válidas.");
             return count;
         }
+        public async Task NormalizeAsync(string input,string output,CancellationToken token)
+        {
+            await Run(new[]{"--object-streams=generate","--stream-data=compress",WindowsPaths.ForIO(input),WindowsPaths.ForIO(output)},token).ConfigureAwait(false);
+        }
         public async Task<string> MergeAsync(string[] files, string directory, bool preserveOrder, CancellationToken token)
         {
             if (!Operations.Supports(Operations.Merge, files)) throw new ArgumentException("Selecione pelo menos dois PDFs.");
