@@ -44,6 +44,8 @@ A impressão usa a versão atual do editor, inclusive antes de salvar. O diálog
 
 ## Compilar, testar e gerar MSI
 
+Para validar antes de gerar o instalador, siga [Testar localmente, sem registrar a extensão](docs/TESTAR-LOCALMENTE.md).
+
 Requer Windows x64 e SDK .NET para Windows (validado com 10.0.402). Use um SDK instalado ou `.tools/dotnet/dotnet.exe`. Referências net48 e WiX 5.0.2 vêm do NuGet. Na raiz:
 
 ```powershell
