@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "dependencies": {
+    ".NETFramework,Version=v4.8": {
+      "Magick.NET-Q16-AnyCPU": {
+        "type": "Direct",
+        "requested": "[15.0.0, )",
+        "resolved": "15.0.0",
+        "contentHash": "zcwOVCGvx4y+7xV+1Vlp1SMhfL5vc22xf7ahBMZ38xot/1Cmzi6lMZeZLlbjkD73PedRjStDu9v1qX8S0XmKjA==",
+        "dependencies": {
+          "Magick.NET.Core": "15.0.0"
+        }
+      },
+      "Microsoft.NETFramework.ReferenceAssemblies": {
+        "type": "Direct",
+        "requested": "[1.0.3, )",
+        "resolved": "1.0.3",
+        "contentHash": "vUc9Npcs14QsyOD01tnv/m8sQUnGTGOw1BCmKcv77LBJY7OxhJ+zJF7UD/sCL3lYNFuqmQEVlkfS4Quif6FyYg==",
+        "dependencies": {
+          "Microsoft.NETFramework.ReferenceAssemblies.net48": "1.0.3"
+        }
+      },
+      "Magick.NET.Core": {
+        "type": "Transitive",
+        "resolved": "15.0.0",
+        "contentHash": "mP/VovMRuXBX2Rcnn1wWu0Zur6cjsf8IQhmTUCrasEk8cyAtN5sjHE7NxiH88whw8/2mjRvuphKUwj6bAZslpQ=="
+      },
+      "Microsoft.NETFramework.ReferenceAssemblies.net48": {
+        "type": "Transitive",
+        "resolved": "1.0.3",
+        "contentHash": "zMk4D+9zyiEWByyQ7oPImPN/Jhpj166Ky0Nlla4eXlNL8hI/BtSJsgR8Inldd4NNpIAH3oh8yym0W2DrhXdSLQ=="
+      },
+      "filetools.core": {
+        "type": "Project"
+      }
+    },
+    ".NETFramework,Version=v4.8/win-x64": {
+      "Magick.NET-Q16-AnyCPU": {
+        "type": "Direct",
+        "requested": "[15.0.0, )",
+        "resolved": "15.0.0",
+        "contentHash": "zcwOVCGvx4y+7xV+1Vlp1SMhfL5vc22xf7ahBMZ38xot/1Cmzi6lMZeZLlbjkD73PedRjStDu9v1qX8S0XmKjA==",
+        "dependencies": {
+          "Magick.NET.Core": "15.0.0"
+        }
+      }
+    }
+  }
+}

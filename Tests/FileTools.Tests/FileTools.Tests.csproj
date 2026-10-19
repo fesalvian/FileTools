@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><TargetFramework>net48</TargetFramework><OutputType>Exe</OutputType><ApplicationManifest>..\..\Application\FileTools\app.manifest</ApplicationManifest><UseWindowsForms>true</UseWindowsForms><AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects><GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType></PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Application\FileTools.Core\FileTools.Core.csproj" />
+    <ProjectReference Include="..\..\Application\FileTools\FileTools.csproj" />
+    <ProjectReference Include="..\..\Application\FileConverterExtension\FileConverterExtension.csproj" />
+  </ItemGroup>
+</Project>
