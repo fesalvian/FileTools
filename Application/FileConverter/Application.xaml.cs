@@ -1,4 +1,5 @@
-﻿// <copyright file="Application.xaml.cs" company="AAllard">License: http://www.gnu.org/licenses/gpl.html GPL version 3.</copyright>
+// Modified for FileTools: offline MVP integration; see docs/PLANO-TECNICO.md.
+// <copyright file="Application.xaml.cs" company="AAllard">License: http://www.gnu.org/licenses/gpl.html GPL version 3.</copyright>
 
 /*  File Converter - This program allow you to convert file format to another.
     Copyright (C) 2026 Adrien Allard
@@ -395,13 +396,7 @@ namespace FileConverter
 
             Debug.Assert(Debug.FirstErrorCode == 0, "An error happened during the initialization.");
 
-            // Check for upgrade.
-            if (settingsService.Settings.CheckUpgradeAtStartup)
-            {
-                IUpgradeService upgradeService = Ioc.Default.GetRequiredService<IUpgradeService>();
-                upgradeService.NewVersionAvailable += this.UpgradeService_NewVersionAvailable;
-                upgradeService.CheckForUpgrade();
-            }
+            // FileTools is offline; automatic update requests are disabled.
 
             ConversionPreset conversionPreset = null;
             if (!string.IsNullOrEmpty(conversionPresetName))
@@ -417,6 +412,7 @@ namespace FileConverter
 
             if (conversionPreset != null)
             {
+                conversionPreset.InputPostConversionAction = InputPostConversionAction.None; // FileTools always preserves originals.
                 IConversionService conversionService = Ioc.Default.GetRequiredService<IConversionService>();
 
                 // Create conversion jobs.

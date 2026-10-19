@@ -1,4 +1,5 @@
-﻿// <copyright file="FileConverterExtension.cs" company="AAllard">License: http://www.gnu.org/licenses/gpl.html GPL version 3.</copyright>
+// Modified for FileTools: offline MVP integration; see docs/PLANO-TECNICO.md.
+// <copyright file="FileConverterExtension.cs" company="AAllard">License: http://www.gnu.org/licenses/gpl.html GPL version 3.</copyright>
 
 namespace FileConverterExtension
 {
@@ -36,7 +37,7 @@ namespace FileConverterExtension
                     PathHelpers.fileConverterRegistryKey = Registry.CurrentUser.OpenSubKey(@"Software\FileConverter");
                     if (PathHelpers.fileConverterRegistryKey == null)
                     {
-                        throw new Exception("Can't retrieve file converter registry entry.");
+                        return null;
                     }
                 }
 
@@ -50,7 +51,7 @@ namespace FileConverterExtension
             {
                 if (string.IsNullOrEmpty(PathHelpers.fileConverterPath))
                 {
-                    PathHelpers.fileConverterPath = PathHelpers.FileConverterRegistryKey.GetValue("Path") as string;
+                    PathHelpers.fileConverterPath = Path.Combine(Path.GetDirectoryName(typeof(PathHelpers).Assembly.Location), "FileConverter.exe");
                 }
 
                 return PathHelpers.fileConverterPath;
@@ -62,7 +63,7 @@ namespace FileConverterExtension
             get
             {
                 string path = System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData);
-                path = Path.Combine(path, "FileConverter");
+                path = Path.Combine(path, "FileTools", "Legacy");
 
                 if (!Directory.Exists(path))
                 {

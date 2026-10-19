@@ -1,4 +1,5 @@
-﻿// <copyright file="FileConverterExtension.cs" company="AAllard">License: http://www.gnu.org/licenses/gpl.html GPL version 3.</copyright>
+// Modified for FileTools: offline MVP integration; see docs/PLANO-TECNICO.md.
+// <copyright file="FileConverterExtension.cs" company="AAllard">License: http://www.gnu.org/licenses/gpl.html GPL version 3.</copyright>
 
 namespace FileConverterExtension
 {
@@ -17,9 +18,9 @@ namespace FileConverterExtension
     /// <summary>
     /// File converter context menu extension class.
     /// </summary>
-    [ComVisible(true), Guid("AF9B72B5-F4E4-44B0-A3D9-B55B748EFE90")]
+    [ComVisible(true), Guid("2776E742-1628-40AA-97F0-F7805F77DAB2")]
     [COMServerAssociation(AssociationType.AllFiles)]
-    public class FileConverterExtension : SharpContextMenu
+    public partial class FileConverterExtension : SharpContextMenu
     {
         private const int MaximumProcessArgumentsLength = 8000; // https://learn.microsoft.com/en-us/troubleshoot/windows-client/shell-experience/command-line-string-limitation
 
@@ -46,7 +47,7 @@ namespace FileConverterExtension
         {
             get
             {
-                string displayPresetIcons = PathHelpers.FileConverterRegistryKey.GetValue("DisplayPresetIcons") as string;
+                string displayPresetIcons = PathHelpers.FileConverterRegistryKey?.GetValue("DisplayPresetIcons") as string;
                 if (displayPresetIcons == null)
                 {
                     return false;
@@ -73,24 +74,17 @@ namespace FileConverterExtension
 
         protected override bool CanShowMenu()
         {
-            this.RefreshExtensionCacheFromSelectedItems();
-
-            PresetReference[] presets = this.PresetReferences;
-            foreach (string extension in this.extensionCache)
+            try
             {
-                foreach (PresetReference presetReference in presets)
-                {
-                    if (presetReference.InputTypes.Contains(extension))
-                    {
-                        return true;
-                    }
-                }
+                var paths = this.SelectedItemPaths.ToArray();
+                if (new[] { FileTools.Operations.Merge, FileTools.Operations.Split, FileTools.Operations.DocumentPdf, "image-png" }.Any(op => FileTools.Operations.Supports(op, paths)))
+                    return true;
+                this.RefreshExtensionCacheFromSelectedItems();
+                return (this.PresetReferences ?? new PresetReference[0]).Any(p => p.InputTypes.Any(ext => this.extensionCache.Contains(ext)));
             }
-
-            return false;
+            catch { return false; }
         }
-
-        protected override ContextMenuStrip CreateMenu()
+        private ContextMenuStrip CreateLegacyMenu()
         {
             this.RefreshPresetList();
 
@@ -337,7 +331,7 @@ namespace FileConverterExtension
                     BuildConversionPresetArgument(stringBuilder);
 
                     // Store list of file to convert in a file in Temp folder.
-                    fileListPath = Path.Combine(Path.GetTempPath(), "file-converter-input-list.txt");
+                    fileListPath = Path.Combine(Path.GetTempPath(), "filetools-legacy-" + System.Guid.NewGuid().ToString("N") + ".txt");
                     int index = 1;
                     while (File.Exists(fileListPath))
                     {
