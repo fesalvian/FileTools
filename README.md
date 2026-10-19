@@ -25,6 +25,16 @@ Pré-requisitos: Windows 10 x64, .NET Framework 4.8 e [Microsoft Visual C++ Redi
 4. Selecione arquivos com Ctrl/Shift, clique com o botão direito e escolha FileTools.
 5. Para desinstalar, use Aplicativos e Recursos → FileTools → Desinstalar.
 
+Na máquina autorizada para instalação, também é possível abrir o instalador pelo terminal:
+
+```powershell
+msiexec.exe /i "artifacts\installer\FileTools-0.2.0-win-x64.msi"
+```
+
+Para desinstalar pelo terminal, use `/x` com o mesmo MSI utilizado na instalação. Esses comandos alteram a integração do Windows; compilar, executar os testes automatizados e inspecionar o MSI não os executa.
+
+Depois de instalar, valide o caminho principal: selecione dois PDFs com Ctrl/Shift, escolha **FileTools → PDF → Unir PDFs** e confira `Documentos_unificados.pdf` na pasta de origem. Repita mantendo esse resultado na pasta: o novo arquivo deve ser `Documentos_unificados (2).pdf`, preservando os PDFs originais. O checklist completo está em `docs/VALIDACAO-EXPLORER.md`.
+
 A instalação **não foi executada no computador de desenvolvimento**. Políticas corporativas que proíbem COM por usuário ou extensões não aprovadas podem exigir implantação/autorização pela TI. Não há tentativa de contornar essas políticas. Consulte [docs/VALIDACAO-EXPLORER.md](docs/VALIDACAO-EXPLORER.md).
 
 União produz `Documentos_unificados.pdf`, depois `Documentos_unificados (2).pdf` etc. Na divisão, a subpasta usa o nome do PDF com sufixo `_paginas`. Uma pasta sem permissão de escrita abre o seletor de destino. Nenhum arquivo é enviado à rede.

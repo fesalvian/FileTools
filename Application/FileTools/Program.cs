@@ -30,7 +30,7 @@ namespace FileTools
                 {
                     if (args.Length != 2 || args[0] != "--request")
                     {
-                        MessageBox.Show("Selecione arquivos no Explorador e use FileTools no menu de contexto.\n\nPDF: unir, separar e extrair páginas.\nImagens: PNG, JPG e WebP.\n\nInstalação: execute Install.cmd no pacote.\nTodos os novos resultados preservam os originais.", "FileTools");
+                        MessageBox.Show("Selecione arquivos no Explorador e use FileTools no menu de contexto.\n\nPDF: unir, separar e extrair páginas.\nImagens: PNG, JPG e WebP.\n\nInstalação: abra FileTools-0.2.0-win-x64.msi.\nTodos os novos resultados preservam os originais.", "FileTools");
                         return;
                     }
                     SelectionRequest request = SelectionTransport.Read(args[1], true);
