@@ -1,7 +1,7 @@
 ﻿param([string]$Path = '')
 $ErrorActionPreference = 'Stop'
 $root = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
-if (-not $Path) { $Path = Join-Path $root 'artifacts\installer\FileTools-0.2.0-win-x64.msi' }
+if (-not $Path) { $Path = Join-Path $root 'artifacts\installer\FileTools-0.3.0-win-x64.msi' }
 $Path = [IO.Path]::GetFullPath($Path)
 # OpenDatabase mode 0 is read-only. Never call InstallProduct or run msiexec here.
 $installer = New-Object -ComObject WindowsInstaller.Installer
@@ -34,7 +34,7 @@ if ($tables | Where-Object { $_[0] -eq 'CustomAction' }) {
 }
 $files = @(Query 'SELECT FileName, FileSize FROM File' 2)
 if ($files | Where-Object { $_[0] -match 'vcruntime|msvcp140|concrt140' }) { throw 'Runtime Microsoft foi incorporado indevidamente.' }
-foreach ($name in @('FileTools.exe','FileTools.Core.dll','FileConverterExtension.dll','qpdf.exe','Magick.Native-Q16-x64.dll')) {
+foreach ($name in @('FileTools.exe','FileTools.Core.dll','FileConverterExtension.dll','qpdf.exe','Magick.Native-Q16-x64.dll','pdfium.dll','PdfSharp-wpf.dll')) {
     if (-not ($files | Where-Object { ($_[0] -split '\|')[-1] -eq $name })) { throw "Arquivo ausente: $name" }
 }
 $worker = $files | Where-Object { ($_[0] -split '\|')[-1] -eq 'FileTools.exe' } | Select-Object -First 1

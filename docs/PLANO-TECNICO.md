@@ -1,4 +1,6 @@
-# Fase 1 — análise e plano técnico
+﻿# Fase 1 — análise e plano técnico
+
+**Revisão vigente:** [PLANO-PRODUTIVIDADE.md](PLANO-PRODUTIVIDADE.md) antecipa editor, conversões Office/imagens/PDF e impressão para o MVP 0.3.0. O texto abaixo registra o plano inicial.
 
 Base inspecionada: fork fesalvian/FileConverter, branch integration, commit 5dce6c0.
 A pasta de trabalho estava vazia e recebeu um clone completo; o histórico e o copyright foram preservados.

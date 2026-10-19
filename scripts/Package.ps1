@@ -51,7 +51,7 @@ foreach ($name in @('FileTools.sln','Directory.Build.props','README.md','LICENSE
 # Original middleware remains in the repository; include it in corresponding source for the preserved legacy build.
 Copy-Item -LiteralPath (Join-Path $root 'Middleware') -Destination $source -Recurse -Force
 Add-Type -AssemblyName System.IO.Compression.FileSystem
-$sourceZip = Join-Path $root 'artifacts\FileTools-0.2.0-source.zip'
+$sourceZip = Join-Path $root 'artifacts\FileTools-0.3.0-source.zip'
 if (Test-Path -LiteralPath $sourceZip) { Remove-Item -LiteralPath $sourceZip }
 [IO.Compression.ZipFile]::CreateFromDirectory($source,$sourceZip,[IO.Compression.CompressionLevel]::Optimal,$false)
 # Generate explicit per-user components, each with an HKCU key path for correct MSI repair.
@@ -110,7 +110,7 @@ $assembly = [Reflection.AssemblyName]::GetAssemblyName((Join-Path $package 'File
 & $Dotnet build Installer\FileTools.wixproj -c Release -p:Platform=x64 "-p:DefineConstants=ShellAssembly=$assembly" --nologo 2>&1 | Out-File -LiteralPath (Join-Path $root '.tools\msi-build.log') -Encoding UTF8
 Get-Content -LiteralPath (Join-Path $root '.tools\msi-build.log') -Tail 18
 if ($LASTEXITCODE -ne 0) { throw 'Falha na geracao do MSI.' }
-$installer = Join-Path $root 'artifacts\installer\FileTools-0.2.0-win-x64.msi'
+$installer = Join-Path $root 'artifacts\installer\FileTools-0.3.0-win-x64.msi'
 Get-FileHash -LiteralPath $installer -Algorithm SHA256 | Format-List
 Write-Output "Instalador: $installer"
 Write-Output "Codigo-fonte: $sourceZip"

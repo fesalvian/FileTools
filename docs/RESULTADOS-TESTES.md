@@ -1,27 +1,32 @@
-# Resultados reais
+﻿# Resultados reais — MVP 0.3.0
 
-Ambiente: Windows 10 x64, build 19045; .NET Framework 4.8/4.8.1 instalado; SDK local 10.0.402; qpdf 12.4.1 x64; Magick.NET 15.0.0.
+Ambiente: Windows 10 x64 build 19045; .NET Framework 4.8; SDK 10.0.402; qpdf 12.4.1; Magick.NET 15.0.0; PDFsharp-WPF 6.2.4; PDFium 158.0.8111 x64 sem V8/XFA.
 
-Execução: scripts/Build.ps1 -Test. Resultado mais recente antes do empacotamento: **36 aprovados, 0 falhos**. O log bruto fica em TestResults/results.txt.
+`scripts/Build.ps1 -Test`: **57 aprovados, 0 falhos**. Compilação sem erros/avisos. Log bruto em `TestResults/results.txt` (gerado, não versionado).
 
-Cobertura automatizada:
+## Cobertura executada
 
-- União real de 2 e 10 PDFs com contagem, conteúdo/ordem e hashes dos originais.
-- Nomes acentuados/Unicode, pastas com espaços, diferentes diretórios e caminhos acima de 260 caracteres.
-- Colisões com (2)/(3), publicação concorrente sem sobrescrita, pasta sem escrita com ACL Windows real.
-- PDF corrompido e PDF com stream de 32 MiB.
-- Cancelamento antes do trabalho, durante processo externo e durante produção parcial.
-- Dependência ausente, avisos de qpdf, arquivo parcial/vazio, limpeza de temporários.
-- Divisão individual, grupos 1-5;6-10, extração 1,3,5, reordenação e intervalos inválidos.
-- Manifesto Unicode com 1.200 entradas, solicitações concorrentes, rejeição de manifestos externos e seleção inválida.
-- Política do menu, snapshot completo e Shell API IShellExtInit com IDataObject/CF_HDROP múltiplo sintético em Windows real.
-- Conversões reais PNG/JPG/WebP, lote e imagem corrompida.
+- Os 36 testes anteriores: união de 2/10 PDFs, ordem/conteúdo, hashes, divisão/extração, conflitos e concorrência, ACL real sem escrita, Unicode/espaços, caminhos >260 caracteres, PDF corrompido e 32 MiB, cancelamento, limpeza, seleção completa por manifesto e `IShellExtInit`/`CF_HDROP` sintético, imagens PNG/JPG/WebP/BMP/TIFF/GIF, fila/mutex.
+- PDFium real: abrir, contar e renderizar pixels de conteúdo, nomes Unicode, limite de pixels e documento inválido.
+- Todas as páginas PDF → PNG/JPG, conteúdo rasterizado, preservação e cancelamento com limpeza do documento corrente.
+- JPG/PNG → PDF individual/unido: contagem real, ordem natural por cor renderizada e hashes dos originais.
+- Editor: texto realmente acrescentado e renderizado; arquivo final passa em `qpdf --check` sem avisos. Imagem/assinatura visual, `/Highlight` e `/Text` persistidos.
+- Reorganização de várias páginas, inserção, remoção, rotação e bloqueio de exclusão da última página; conteúdo/ordem conferidos por qpdf. Sobreposições conferidas por pixels em 0/90/180/270° em página retangular.
+- Desfazer/refazer, serialização/recuperação, fallback para diário `.bak`, salvamento por cópia, confirmação para original, backup íntegro e bloqueio após alteração externa; cancelamento sem tocar no original.
+- AcroForm sintético real com texto, checkbox e combo: valores reabertos, aparência renderizada e validação qpdf.
+- Janela WPF real aberta: carregamento assíncrono, preview PDFium, botão Salvar, publicação de arquivo legível e fechamento/limpeza. O teste aciona o controle programaticamente; não simula todos os gestos/atalhos do usuário.
+- Paginador Windows produz visual real e respeita limites, **sem enviar trabalho a uma impressora**.
+- Compatibilidade do menu e movimentação do modelo de ordem.
+- Adaptador LibreOffice com processo simulado: filtros, perfil isolado, saída, limpeza e preservação. Cancelamento de processo externo real que cria um filho verifica encerramento de ambos pelo Windows Job.
 
-A seleção sintética verifica a entrada da API da extensão, sem registrar COM nem executar dentro do explorer.exe. **Não foram executados instalação/desinstalação do MSI nem cliques/Ctrl/Shift no Explorer.** Também não foram medidos consumo de memória, tempos de abertura do menu em produção, arquivos de vários GiB ou comportamento em todas as políticas corporativas.
+## Limites da evidência
 
-Falhas iniciais revelaram dependência ausente no diretório do harness, contexto de sincronização de controles WinForms no teste, restauração de ACL e limitação nativa de caminhos longos. Foram corrigidas, e a suíte foi repetida até passar integralmente. Não foram alteradas as políticas de caminhos longos nem o Registro para fazer os testes passarem.
-- Verificação adicional: leitores JPG/WebP/BMP/TIFF/GIF, cancelamento de trabalho em espera e recuperação de mutex abandonado por término de uma thread simulando interrupção do worker.
+**Não executados:** conversões reais DOC/DOCX/PDF→DOCX (LibreOffice ausente), instalação/desinstalação COM, cliques/Ctrl/Shift no Explorer, drag and drop/atalhos completos do editor, diálogo Windows/saída física de impressão, atualização do MSI instalado. O roteiro está em [VALIDACAO-EXPLORER.md](VALIDACAO-EXPLORER.md).
 
-Validação adicional do instalador: MSI gerado com WiX 5.0.2 e inspecionado em modo somente leitura por scripts/Inspect-Msi.ps1. Conferidos handler/CLSID exclusivos, identidade COM, arquivos obrigatórios e gravações de Registry exclusivamente em HKCU; não há execução de scripts/processos de instalação personalizados. A única ação adicional é a ação padrão tipo 51 do NetFx para calcular a propriedade do pré-requisito. ICE91 foi suprimido porque este produto é deliberadamente apenas por usuário; as verificações de componentes, registro e remoção de pastas permanecem habilitadas. Isso não equivale a testar instalação/desinstalação.
+Não foram medidos latência/memória em produção, arquivos de vários GiB, todos os formulários/fontes/CropBoxes, desempenho em rede ou políticas corporativas. Um formulário sintético não demonstra fidelidade universal de AcroForms.
 
-Limpeza do ambiente: o primeiro uso do SDK local criou automaticamente um certificado HTTPS de desenvolvimento ASP.NET. Esse certificado específico foi identificado por horário/hash e removido com sua chave privada; os demais certificados foram preservados. Os scripts finais desativam essa geração e a inclusão de ferramentas globais no PATH. A extensão FileTools permaneceu sem registro durante toda a validação.
+A validação encontrou e corrigiu chamadas indevidas da API de páginas/formulários, caminhos estendidos no GDI+, e trailers Flate incompletos do PDFsharp 6.2.4. A escrita usa a variante WPF e delega a compressão final ao qpdf com seu transporte UTF-8 por arquivo de argumentos. Os testes verificam o resultado final sem relaxar avisos do qpdf. A versão 6.5.0 foi descartada por mudança de licença; o lock fixa a 6.2.4 MIT.
+
+O MSI é gerado e aberto somente em leitura por `scripts/Inspect-Msi.ps1`: handler/CLSID exclusivo, identidade COM, payload (incluindo PDFium/PDFsharp), pré-requisitos e gravações exclusivamente HKCU. A única custom action permitida é o cálculo de propriedade do NetFx (tipo 51). Essa inspeção não instala o produto.
+
+Não foi modificado o Registro para esta entrega. A extensão permanece sem registro. A limpeza anterior do certificado HTTPS gerado pelo primeiro uso do SDK foi preservada; os scripts desativam sua geração e alterações do PATH.

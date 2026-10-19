@@ -1,18 +1,20 @@
-# Validação manual pendente — Windows 10 x64
+﻿# Validação manual pendente — Windows 10 x64
 
-Esta lista não foi executada nesta entrega. Compilar o MSI não equivale a instalar ou validar a extensão no Explorer. Executar em máquina/VM Windows 10 x64 autorizada, com usuário comum e pré-requisitos preparados.
+Execute em máquina/VM autorizada, com usuário comum e pré-requisitos do README. Este roteiro **não foi executado** integralmente. O teste automatizado abre o editor WPF, renderiza preview e aciona Salvar; isso não substitui os gestos do editor nem a ativação COM no Explorer.
 
-1. Registrar estado de HKCU/Software/Classes/CLSID e do handler FileTools; se o CLSID exclusivo já pertencer a outra instalação não gerenciada, não prosseguir.
-2. Instalar o MSI como usuário comum e confirmar o destino LocalAppData/Programs/FileTools. Confirmar que não alterou associações de arquivos, FileConverter anterior, Run/Startup, HKLM ou serviços.
-3. Selecionar 2 e 10 PDFs com Ctrl e Shift, incluindo nomes acentuados e pastas com espaços. Executar “Unir PDFs” e conferir ordem natural, contagem e conteúdo de cada página.
-4. Testar várias invocações, seleção mista (PDF/imagens), arquivo único, ausência de presets, Unicode, caminhos longos, diretórios de rede e pastas distintas quando uma janela do shell permitir seleção de origens distintas.
-5. Verificar que comandos incompatíveis desaparecem, que há um único submenu FileTools e que o ícone aparece.
-6. Conferir nome padrão, conflitos (2)/(3), originais intactos, saída no diretório da primeira entrada e fallback de destino com pasta sem escrita.
-7. Dividir por página, por grupos 1-5;6-10 e extrair 1,3,5. Verificar PDFs danificados, protegidos por senha, grande volume, disco cheio e dependência ausente.
-8. Converter JPG/PNG/WebP/BMP/TIFF/GIF, cancelando um lote longo. Verificar primeira página/quadro e ausência de arquivos parciais.
-9. Confirmar responsividade do Explorer, processamento pesado em FileTools.exe/qpdf.exe, serialização entre invocações e saída de todos os processos após encerrar a notificação.
-10. Validar tema, reordenação, intervalos, progresso, seleção de destino, notificações e abertura de arquivo/pasta.
-11. Desinstalar por Aplicativos e Recursos. Confirmar remoção dos arquivos instalados, handler FileTools e CLSID exclusivo; confirmar preservação de resultados e integrações anteriores.
-12. Testar reinstalação/reparo, atualização e remoção com explorer.exe mantendo a DLL em memória. O Windows Installer pode solicitar encerramento de aplicativos/sessão. Não matar o Explorer automaticamente.
+1. Instalar `FileTools-0.3.0-win-x64.msi`, somente após autorização para o Registro. Conferir CLSID/handler exclusivos em HKCU e preservação de associações, FileConverter anterior, HKLM, Run/Startup, serviços e impressora padrão.
+2. Selecionar 2 e 10 PDFs com Ctrl/Shift, inclusive nomes `doc2.pdf`/`doc10.pdf`, Unicode e espaços. **FileTools → Unir PDFs…** deve mostrar todos os nomes e quantidades de páginas, inicialmente em ordem natural. Arrastar, usar ↑/↓ e confirmar com Enter. Conferir conteúdo e ordem do resultado, pasta de origem, conflitos `(2)/(3)` e hashes dos originais. Não considerar a ordem da Shell como histórico dos cliques.
+3. Converter DOC e DOCX para PDF pelo menu com LibreOffice instalado. Comparar fontes, cabeçalhos, tabelas, imagens e páginas com a fonte. Testar lote, cancelamento e instância do LibreOffice já aberta; esta deve permanecer funcionando. Sem LibreOffice, conferir mensagem informativa e ausência de resultado falso.
+4. Converter PDF para DOCX editável e confirmar o aviso de fidelidade. Testar texto, colunas/tabelas e PDF digitalizado; verificar falha/limitação sem prometer OCR. Conferir originais intactos.
+5. Selecionar PNG/JPG e gerar PDF único; conferir ordem natural, cores, transparência, proporções e páginas. Repetir individualmente. Testar JPG↔PNG e imagens corrompidas, inclusive TIFF/GIF de múltiplos quadros no caminho de conversão de formatos.
+6. Exportar PDF de várias páginas para PNG e JPG; conferir todas as páginas, numeração, subpastas, cores e original. Cancelar lote e conferir remoção somente das saídas do documento corrente.
+7. **Editar PDF** deve abrir diretamente. Inserir texto por clique, imagem e assinatura visual; destacar área e comentar. Conferir preview, anotações e arquivo reaberto. O texto existente não deve ser anunciado como reescrito.
+8. Selecionar miniaturas com Ctrl/Shift; girar, remover, inserir outro PDF e arrastar páginas. Conferir ordem final e rotação em páginas de tamanhos/orientações diferentes. Desfazer/refazer por botões e Ctrl+Z/Ctrl+Y. Testar PDFs com CropBox/MediaBox distintos antes de usá-los em produção.
+9. Preencher texto, checkbox e lista AcroForm. Salvar, reabrir em outro leitor e imprimir preview; conferir valores e aparência. Testar formulários hierárquicos/multilinha; XFA deve ser recusado. Campos de PDFs inseridos não são mesclados ao formulário original.
+10. Salvar pelo botão e Ctrl+S: primeiro cria `_editado.pdf`, próximos reutilizam o resultado. Ctrl+Shift+S abre Salvar como. Escolher original exige confirmação e gera backup íntegro; alteração externa deve bloquear substituição. Testar fechar com alterações nos três caminhos Salvar/Descartar/Cancelar, pasta sem escrita e disco cheio.
+11. Aplicar edições e encerrar **somente o processo de teste FileTools.exe** abruptamente. Reabrir o original e restaurar o diário. Conferir textos, imagens, ordem e formulários já aplicados. Repetir com `state.json` corrompido mantendo `.bak`, usando apenas sessão de teste. Não apagar recuperações de documentos reais.
+12. **FileTools → Imprimir PDF…** deve abrir o diálogo Windows para arquivo único. No lote, conferir ordem/lista e depois diálogo. Cancelar ambos não pode imprimir. Em impressora autorizada, testar intervalo, papel, orientação, cópias e propriedades. Ctrl+P e botão Imprimir do editor devem incluir alterações atuais. Confirmar ausência de mudança da impressora padrão/configurações globais.
+13. Testar seleções mistas, repetição de operações, Unicode/caminhos longos, pastas de rede, PDF com senha/corrompido, grande volume, falta de dependências e pasta sem escrita. Conferir menu responsivo, motores fora do Explorer, notificações e encerramento dos processos. Medir latência/memória antes de declarar desempenho em produção.
+14. Desinstalar por Aplicativos e Recursos; conferir remoção de arquivos instalados/handler/CLSID e preservação de documentos, backups e recuperações. Testar atualização da versão 0.2.0, reparo/reinstalação e DLL ainda carregada pelo Explorer; não matar o Explorer automaticamente.
 
-Registrar versão exata do Windows, resultados, horário e problemas. Somente depois declarar instalação e integração interativa testadas.
+Registrar Windows, LibreOffice, impressora/driver, arquivos sintéticos usados, resultados e falhas. Só depois declarar os respectivos critérios de aceitação validados interativamente.
