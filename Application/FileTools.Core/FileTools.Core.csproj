@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\FileConverterExtension\FileConverterExtensionKey.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup><Reference Include="System.Runtime.Serialization" /></ItemGroup>
+</Project>
