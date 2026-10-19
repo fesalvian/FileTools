@@ -5,6 +5,8 @@ Set-Location -LiteralPath $root
 if (Test-Path -LiteralPath (Join-Path $root '.tools\dotnet\dotnet.exe')) { $Dotnet = Join-Path $root '.tools\dotnet\dotnet.exe' }
 $env:DOTNET_CLI_TELEMETRY_OPTOUT = '1'
 $env:DOTNET_NOLOGO = '1'
+$env:DOTNET_GENERATE_ASPNET_CERTIFICATE = 'false'
+$env:DOTNET_ADD_GLOBAL_TOOLS_TO_PATH = 'false'
 $env:DOTNET_CLI_HOME = Join-Path $root '.tools\cli'
 $env:NUGET_PACKAGES = Join-Path $root '.tools\packages'
 & (Join-Path $PSScriptRoot 'New-Icon.ps1')

@@ -1,0 +1,12 @@
+﻿<Project Sdk="WixToolset.Sdk/5.0.2">
+  <PropertyGroup>
+    <OutputName>FileTools-0.2.0-win-x64</OutputName>
+    <OutputPath>..\artifacts\installer\</OutputPath>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <InstallerPlatform>x64</InstallerPlatform><SuppressIces>ICE91</SuppressIces>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="WixToolset.NetFx.wixext" Version="5.0.2" /><Compile Include="FileTools.Product.wxs" />
+    <Compile Include="..\artifacts\Payload.wxs" />
+  </ItemGroup>
+</Project>

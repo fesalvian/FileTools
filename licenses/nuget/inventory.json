@@ -1,0 +1,106 @@
+﻿[
+    {
+        "Package":  "Magick.NET.Core/15.0.0",
+        "License":  "Apache-2.0",
+        "Copyright":  "Copyright 2013-2026 Dirk Lemstra",
+        "Origin":  "https://github.com/dlemstra/Magick.NET",
+        "RepositoryUrl":  "https://github.com/dlemstra/Magick.NET",
+        "RepositoryCommit":  "79bb8700d7fe3a564f62926ab299fc2520cb2269"
+    },
+    {
+        "Package":  "Magick.NET-Q16-AnyCPU/15.0.0",
+        "License":  "Apache-2.0",
+        "Copyright":  "Copyright 2013-2026 Dirk Lemstra",
+        "Origin":  "https://github.com/dlemstra/Magick.NET",
+        "RepositoryUrl":  "https://github.com/dlemstra/Magick.NET",
+        "RepositoryCommit":  "79bb8700d7fe3a564f62926ab299fc2520cb2269"
+    },
+    {
+        "Package":  "Microsoft.Bcl.HashCode/1.1.1",
+        "License":  "MIT",
+        "Copyright":  "© Microsoft Corporation. All rights reserved.",
+        "Origin":  "https://github.com/dotnet/corefx",
+        "RepositoryUrl":  "",
+        "RepositoryCommit":  ""
+    },
+    {
+        "Package":  "SharpShell/2.7.2",
+        "License":  "MIT",
+        "Copyright":  "Copyright © Dave Kerr 2018",
+        "Origin":  "https://github.com/dwmkerr/sharpshell",
+        "RepositoryUrl":  "",
+        "RepositoryCommit":  ""
+    },
+    {
+        "Package":  "System.Buffers/4.5.1",
+        "License":  "MIT",
+        "Copyright":  "© Microsoft Corporation. All rights reserved.",
+        "Origin":  "https://dot.net/",
+        "RepositoryUrl":  "",
+        "RepositoryCommit":  ""
+    },
+    {
+        "Package":  "System.Collections.Immutable/9.0.0",
+        "License":  "MIT",
+        "Copyright":  "© Microsoft Corporation. All rights reserved.",
+        "Origin":  "https://dot.net/",
+        "RepositoryUrl":  "https://github.com/dotnet/runtime",
+        "RepositoryCommit":  "9d5a6a9aa463d6d10b0b0ba6d5982cc82f363dc3"
+    },
+    {
+        "Package":  "System.Formats.Nrbf/9.0.0",
+        "License":  "MIT",
+        "Copyright":  "© Microsoft Corporation. All rights reserved.",
+        "Origin":  "https://dot.net/",
+        "RepositoryUrl":  "https://github.com/dotnet/runtime",
+        "RepositoryCommit":  "9d5a6a9aa463d6d10b0b0ba6d5982cc82f363dc3"
+    },
+    {
+        "Package":  "System.Memory/4.5.5",
+        "License":  "MIT",
+        "Copyright":  "© Microsoft Corporation. All rights reserved.",
+        "Origin":  "https://dot.net/",
+        "RepositoryUrl":  "",
+        "RepositoryCommit":  ""
+    },
+    {
+        "Package":  "System.Numerics.Vectors/4.5.0",
+        "License":  "MIT",
+        "Copyright":  "© Microsoft Corporation.  All rights reserved.",
+        "Origin":  "https://dot.net/",
+        "RepositoryUrl":  "",
+        "RepositoryCommit":  ""
+    },
+    {
+        "Package":  "System.Reflection.Metadata/9.0.0",
+        "License":  "MIT",
+        "Copyright":  "© Microsoft Corporation. All rights reserved.",
+        "Origin":  "https://dot.net/",
+        "RepositoryUrl":  "https://github.com/dotnet/runtime",
+        "RepositoryCommit":  "9d5a6a9aa463d6d10b0b0ba6d5982cc82f363dc3"
+    },
+    {
+        "Package":  "System.Resources.Extensions/9.0.0",
+        "License":  "MIT",
+        "Copyright":  "© Microsoft Corporation. All rights reserved.",
+        "Origin":  "https://dot.net/",
+        "RepositoryUrl":  "https://github.com/dotnet/runtime",
+        "RepositoryCommit":  "9d5a6a9aa463d6d10b0b0ba6d5982cc82f363dc3"
+    },
+    {
+        "Package":  "System.Runtime.CompilerServices.Unsafe/6.0.0",
+        "License":  "MIT",
+        "Copyright":  "© Microsoft Corporation. All rights reserved.",
+        "Origin":  "https://dot.net/",
+        "RepositoryUrl":  "https://github.com/dotnet/runtime",
+        "RepositoryCommit":  "4822e3c3aa77eb82b2fb33c9321f923cf11ddde6"
+    },
+    {
+        "Package":  "System.ValueTuple/4.5.0",
+        "License":  "MIT",
+        "Copyright":  "© Microsoft Corporation.  All rights reserved.",
+        "Origin":  "https://dot.net/",
+        "RepositoryUrl":  "",
+        "RepositoryCommit":  ""
+    }
+]

@@ -1,100 +1,73 @@
-# File Converter
+# FileTools
 
-## Description
+Ferramentas offline para Windows 10 x64 pelo menu de contexto do Explorador. Derivado de [FileConverter](https://github.com/fesalvian/FileConverter), preservando C#, .NET Framework 4.8, WPF, SharpShell e Magick.NET.
 
-**File Converter** is a very simple tool which allows you to convert and compress one or several file(s) using the context menu of windows explorer.
+**Versão 0.2.0 — MVP da fase 2.** A análise está em [docs/PLANO-TECNICO.md](docs/PLANO-TECNICO.md). A suíte automatizada passou no Windows 10 build 19045; a instalação e o uso interativo no Explorer ainda precisam da validação descrita abaixo.
 
-![File Converter Usage](Resources/FileConverterUsage.gif)
+## O que está implementado
 
-You can download it here: [file-converter.io](https://file-converter.io/?from=readme.md).
+- FileTools → PDF → Unir PDFs; ordem natural dos nomes, com desempate pelo caminho. Há um comando opcional para escolher a ordem.
+- Separar todas as páginas; dividir por intervalos como `1-5;6-10`; extrair páginas como `1,3,5`. Cada grupo vira um PDF. Em seleção de vários PDFs, os mesmos intervalos são aplicados a cada entrada.
+- FileTools → Imagens → PNG, JPG e WebP em lote. Entradas JPG/JPEG, PNG, WebP, BMP, TIFF e GIF. Para TIFF/GIF, somente a primeira página/quadro; não há preservação de animação neste MVP.
+- Originais preservados, saída junto ao primeiro arquivo recebido, nomes exclusivos e subpastas nas divisões. O destino é capturado antes da ordenação.
+- Progresso após 700 ms, cancelamento, fila serial por usuário e notificação com acesso ao arquivo/pasta. O ícone de notificação dura oito segundos; não há serviço residente.
+- Seleção completa por Shell API/SharpShell e manifesto JSON Unicode, inclusive quando a lista excede os limites da linha de comando.
+- Tema claro/escuro conforme Windows nas janelas novas. Controles nativos mantêm o estilo do sistema.
+- Instalador MSI x64 por usuário. Sem alteração de associações, inicialização automática ou integrações anteriores do FileConverter.
 
-You can find more information about what's in File converter and how to use it on the [wiki](https://github.com/Tichau/FileConverter/wiki).
+## Instalar e usar
 
-## Donate
+Pré-requisitos: Windows 10 x64, .NET Framework 4.8 e [Microsoft Visual C++ Redistributable x64](https://learn.microsoft.com/cpp/windows/latest-supported-vc-redist). Podem ser preparados offline pela TI. O runtime Microsoft não é redistribuído no MSI.
 
-File Converter is a personal open source project started in 2014. I have put hundreds of hours adding, refining and tuning File Converter with the goal of making the conversion and compression of files an easy task for everyone.
+1. Abra `artifacts/installer/FileTools-0.2.0-win-x64.msi`.
+2. A instalação grava em `%LOCALAPPDATA%/Programs/FileTools` e registra apenas o CLSID próprio e o handler FileTools em HKCU.
+3. Feche e abra uma janela do Explorador. Se o Windows mantiver a extensão antiga em memória, encerre a sessão e entre novamente.
+4. Selecione arquivos com Ctrl/Shift, clique com o botão direito e escolha FileTools.
+5. Para desinstalar, use Aplicativos e Recursos → FileTools → Desinstalar.
 
-You can help me by [contributing to the project](https://github.com/Tichau/FileConverter/wiki#contribute), by [making a donation](https://www.paypal.com/donate/?cmd=_donations&business=3BDWQTYTTA3D8&item_name=File+Converter+Donations&currency_code=EUR&Z3JncnB0=) or just by [saying thanks](https://saythanks.io/to/Tichau) :).
+A instalação **não foi executada no computador de desenvolvimento**. Políticas corporativas que proíbem COM por usuário ou extensões não aprovadas podem exigir implantação/autorização pela TI. Não há tentativa de contornar essas políticas. Consulte [docs/VALIDACAO-EXPLORER.md](docs/VALIDACAO-EXPLORER.md).
 
-## Troubleshooting
+União produz `Documentos_unificados.pdf`, depois `Documentos_unificados (2).pdf` etc. Na divisão, a subpasta usa o nome do PDF com sufixo `_paginas`. Uma pasta sem permissão de escrita abre o seletor de destino. Nenhum arquivo é enviado à rede.
 
-If you encounter any problem with File Converter, you can:
+## Compilar, testar e gerar MSI
 
-* See the already known problems in the [troubleshooting section of the documentation](https://github.com/Tichau/FileConverter/wiki/Troubleshooting).
-* Or report an issue on the [bug tracker](https://github.com/Tichau/FileConverter/issues).
+Instale um SDK .NET atual para Windows (a execução desta entrega usou 10.0.402) ou use um SDK local em `.tools/dotnet`. As referências net48 e o WiX 5.0.2 são restaurados pelo NuGet; Visual Studio não é obrigatório. A compilação inicial requer internet; os aplicativos instalados operam offline.
 
-## Setup development environment
+No PowerShell, na raiz do repositório:
 
-### Requirements
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Get-Qpdf.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Build.ps1 -Test -Package
+```
 
-For File Converter and its explorer extension:
+O bypass vale apenas para o processo; não muda a política persistente de execução. `Get-Qpdf.ps1` baixa o qpdf 12.4.1 MSVC x64 da origem oficial e confere o SHA-256 publicado. Não instala nem registra nada.
 
-* Visual Studio 2022
+- `FileTools.sln`: núcleo, processo WPF, extensão, aplicação original e testes.
+- `scripts/Build.ps1 -Test`: compila e executa testes reais; código de saída não zero se houver falha.
+- `scripts/Package.ps1`: gera MSI, inventário de arquivos e ZIP de fontes; não executa o instalador.
+- `scripts/Inspect-Msi.ps1`: confere o banco do MSI somente em leitura, sem instalar nem registrar a extensão.
+- `TestResults/results.txt`: resultado da última execução. O relatório versionado está em [docs/RESULTADOS-TESTES.md](docs/RESULTADOS-TESTES.md).
+- Saída de compilação: `Application/FileTools/bin/x64/Release/net48/FileTools.exe`.
+- O executável é chamado com `--request <manifesto>`; executar sem argumentos mostra orientações. Não é uma janela principal residente.
 
-For the installer:
+## Arquitetura e preservação do fork
 
-* [Wix 5](http://wixtoolset.org/) (will be installed by nuget)
-  * [Community Visual Studio Extension](https://marketplace.visualstudio.com/items?itemName=FireGiant.FireGiantHeatWaveDev17)
-* [Windows SDK Signing Tools for Desktop Apps](https://developer.microsoft.com/fr-fr/windows/downloads/windows-10-sdk)
+`FileTools.Core` contém FileSelection, transporte, Shell command policy, PdfOperations, FileOutputManager, BatchOperations e execução de processos. A extensão original foi adaptada, mantendo SharpShell. `FileTools` contém ImageConversion e as janelas WPF pontuais. Temas vêm do Windows, e os logs novos registram apenas tipo de erro, código e horário em `%LOCALAPPDATA%/FileTools/Logs`.
 
-## Thanks
+Os conversores originais (FFmpeg, Office, Ghostscript, presets e localizações) permanecem no código e são compilados em `Application/FileConverter/bin/x64/Release/net48`. O instalador do MVP contém somente os motores inventariados necessários à fase 2. Não inclui a aplicação legada nem redistribui Ripper, yeti.mmedia, Markdown.Xaml, FFmpeg ou Ghostscript, cujos binários históricos precisam de auditoria de proveniência/código-fonte antes de uma nova distribuição. Uma instalação anterior do FileConverter continua intacta.
 
-Thanks to all the contributors of File Converter project.
+O código da extensão conserva o submenu “Conversões existentes” para uma distribuição legada completa quando `FileConverter.exe` e `Settings.default.xml` estiverem ao lado dela. Esse caminho é separado do MVP: preserva os conversores anteriores, mas ainda não possui o novo commit atômico nem o mesmo conjunto de testes. A consulta automática de atualizações foi desativada, as configurações legadas ficam em FileTools/Legacy e a exclusão automática de originais é forçada para None.
 
-### Localization
+## Limitações conhecidas
 
-* Thanks to **Khidreal** and **hugok79** for the Portuguese localization.
-* Thanks to **Marhc** for the Brazilian localization.
-* Thanks to **Chachak** for the Spanish localization.
-* Thanks to **Davide** for the Italian localization.
-* Thanks to **nikotschierske** for the German localization.
-* Thanks to **Snoopy1866** for the Simplified Chinese localization.
-* Thanks to **MayaC0re** for the Turkish localization.
-* Thanks to **vishveshjain** for the Hindi localization.
-* Thanks to **Mahmoud0Sultan** for the Arabic localization.
-* Thanks to **Sedimentary-Rock**, **NeKoOuO** and **PeterDaveHello** for the Traditional Chinese localization.
-* Thanks to **CrisBalGreece** for the Greek localization.
-* Thanks to **AshiVered** for the Hebrew localization.
-* Thanks to **MrHero118** and **Mehrdad32** for the Persian localization.
-* Thanks to **crnobog69** for the Serbian localizations.
-* Thanks to **oogamiyuta** for the Japanese localization.
-* Thanks to **AidyTheWeird** for the Czech localization.
-* Thanks to **Alanimdeo** for the Korean localization.
-* Thanks to **vrykolakas166** and **thaovd** for the Vietnamese localization.
-* Thanks to **iliamak** for the Russian localization.
-* Thanks to **itsmefdil** for the Indonesian localization.
-* Thanks to **hamzaharoon1314** for the Urdu localization.
-* Thanks to **Zyvrec7** and **stohlferenc** for the Hungarian localization.
-* Thanks to **Maerek** and **MrPrince419** for the Polish localization.
-* Thanks to **rkalitta** for the Swedish localization.
+- Instalação/desinstalação, ativação COM pelo explorer.exe, Ctrl/Shift no Explorer e aparências precisam de validação manual. O teste da Shell usa um IDataObject/CF_HDROP sintético em Windows real e não substitui esse teste.
+- PDFs criptografados por senha não têm diálogo de desbloqueio. PDFs com avisos de reparo do qpdf são recusados em vez de produzir resultado silenciosamente.
+- União/divisão trabalha com páginas. Formulários interativos, anexos, marcadores de navegação e metadados globais não têm garantia de preservação ao combinar documentos; assinaturas digitais deixam de validar após qualquer transformação.
+- Lotes são sequenciais. No cancelamento/falha, itens concluídos anteriormente permanecem; a divisão do PDF corrente desfaz apenas suas saídas. Interrupção abrupta do computador pode deixar diretórios temporários `.filetools-*` na origem e arquivos de argumentos temporários; o cancelamento normal faz a limpeza.
+- O núcleo usa prefixos estendidos para caminhos longos sem mudar o Registro. A abertura em visualizadores externos depende do suporte do respectivo programa.
+- A compressão de PDF, LibreOffice, conversão de PDF para imagens/TXT/DOCX, imagens para PDF, renomeação, organização, ZIP, extração de imagens e editor visual pertencem às fases 3/4 e ainda não foram implementados.
+- MSI não assinado digitalmente. Não é uma versão declarada pronta para implantação corporativa antes da validação manual.
 
-## Middlewares
+## Licença
 
-File converter uses the following middlewares:
-
-**ffmpeg** (v8.0.1) as file conversion software.
-Thanks to ffmpeg devs for this awesome open source file conversion tool. [Web site link](https://ffmpeg.org)
-
-**ImageMagick** (v14.10) as image edition and conversion software.
-Thanks to image magick devs for this awesome open source image edition software suite.  [Web site link](http://imagemagick.net)
-And thanks to dlemstra for the C# wrapper of this software. [Github link](https://github.com/ImageMagick/ImageMagick)
-
-**Ghostscript** (10.02.1) as pdf edition software.
-Thanks to ghostscript devs. [Download link](https://www.ghostscript.com/download/gsdnld.html)
-
-**SharpShell** to easily create windows context menu extensions.
-Thanks to Dave Kerr for his work on SharpShell. [GitHub link](https://github.com/dwmkerr/sharpshell)
-
-**Ripper** and **yeti.mmedia** for CD Audio extraction.
-Thanks to Idael Cardoso for his work on CD Audio ripper. [Code project link](https://www.codeproject.com/Articles/5458/C-Sharp-Ripper)
-
-**Markdown.XAML** for markdown rendering in the wpf application.
-Thanks to Bevan Arps for his work on Markdown.XAML. [GitHub link](https://github.com/theunrepentantgeek/Markdown.XAML)
-
-**WpfAnimatedGif** for animated gif rendering in the wpf application.
-Thanks to Thomas Levesque for his work on WpfAnimatedGif. [GitHub link](https://github.com/XamlAnimatedGif/WpfAnimatedGif)
-
-## License
-
-File Converter is licensed under the GPL version 3 License.
-For more information check the LICENSE.md file in your installation folder or the [gnu website](https://www.gnu.org/licenses/gpl.html).
+GPL-3.0-or-later conforme o projeto original, com copyright e [LICENSE.md](LICENSE.md) preservados. Bibliotecas têm licenças próprias em [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) e `licenses/`. Distribua o ZIP de código-fonte correspondente junto com o MSI.
